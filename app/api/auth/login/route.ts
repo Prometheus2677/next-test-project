@@ -15,5 +15,16 @@ export async function POST(req: Request) {
     expiresIn: "1h",
   });
 
-  return NextResponse.json({ token });
+  const response = NextResponse.json({ message: "Login successful" });
+  response.cookies.set({
+    name: "token",
+    value: token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60,
+  });
+
+  return response;
 }
