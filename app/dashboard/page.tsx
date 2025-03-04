@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { checkAuth } from "@/lib/authUtils";
 import axios from "axios";
+import Link from "next/link";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -10,17 +12,13 @@ export default function Dashboard() {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get("/api/auth/me", { withCredentials: true });
-        if (res.data) setAuthenticated(true);
-      } catch (error) {
-        setAuthenticated(false);
-        router.push("/login");
-      }
+    const fetchAuth = async () => {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) router.push("/login");
+      setAuthenticated(isAuthenticated);
     };
 
-    checkAuth();
+    fetchAuth();
   }, []);
 
   useEffect(() => {
